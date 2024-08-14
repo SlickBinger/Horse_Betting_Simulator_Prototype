@@ -25,7 +25,7 @@ class Game:
             'resolving': self.resolvingState
         }
         
-    def run(self):
+    def run(self) -> None:
         pygame.display.set_caption('Glimpy Piddles: Race Day')
         
         while True:
