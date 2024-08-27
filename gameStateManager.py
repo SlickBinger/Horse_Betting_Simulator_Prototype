@@ -11,6 +11,16 @@ class GameStateManager:
     def __init__(self, current_state: str) -> None:
         self.set_state(current_state)
         
+    def set_resolution_var(self, resolution_scaler) -> None:
+        resolutions = {
+            1080: (6, 1920, 1080),
+            720: (4, 1280, 720),
+            640: (1, 640, 360)
+        }
+        self.resolution_multiplier, self.screen_w, self.screen_h = resolutions[resolution_scaler]
+    def get_resolution_var(self) -> int:
+        return self.resolution_multiplier, self.screen_w, self.screen_h   
+    
     def set_state(self, state: str) -> None:
         self.state = state
     def get_state(self) -> str:

@@ -8,30 +8,29 @@ Bet:
     returns - amount won if bet resolves
 """
 class Bet:
-    def __init__(self, odds: tuple, horse: Horse) -> None:
+    def __init__(self, type: str, odds: tuple, horse: Horse) -> None:
+        self.type = type
         self.bet_horse = horse
         self.bet_odds = odds
+        self.bet_amount:    float = 0.00
+        self.bet_returns:   float = 0.00
 
-    # Bet is placed if:
-    #   - bet amount is greater than the minimum required bet
-    #   - bet amount is less then or equal to the players wallet
-    def set_bet_amount(self, amount: float, wallet: float) -> bool:
-        if amount < self.bet_odds[1] or amount > wallet: 
-            return False
-        
+    def __str__(self) -> str:
+        return f'{"":-^50}\n{"Bet Type:":<15}{self.type}\n{"Horse:":<15}{self.bet_horse.name}\n{"Odds:":<15}{self.bet_odds}\n{"Amount:":<15}{self.bet_amount}\n{"Returns":<15}{self.bet_returns}\n{"":-^50}\n'
+    
+    def set_bet_amount(self, amount: float) -> None:
         self.bet_amount = amount
         self.bet_returns = round((self.bet_odds[0] / self.bet_odds[1]) * amount, 2)
-
-        return True
+    
+    
     
 """
 Position Bet:
     Bet for a horse to finish at specific position
 """
 class Position(Bet):
-    def __init__(self, horse: Horse) -> None:
-        super().__init__((10, 1), horse)
-        self.type = 'Position'
+    def __init__(self, horse: Horse):
+        super().__init__('Position', (10, 1), horse)
 
     # Position is unique to this bet type requiring extra criteria
     def set_position(self, pos: int) -> None:
@@ -43,23 +42,13 @@ class Position(Bet):
                 return self.bet_returns
         return 0.00
     
-    def print_bet(self) -> None:
-        print(f'{' ' + self.type + ' ':-^30}\n')
-        print(f'    Horse:      {self.bet_horse.name}')
-        print(f'    Position:   {self.position}')
-        print(f'    Odds:       {self.bet_odds[0]} : {self.bet_odds[1]}')
-        print(f'    Amount:     {self.bet_amount}.00$')
-        print(f'    Returns:    {self.bet_returns}')
-        print(f'{'':_^30}')
-    
 """
 Top Three:
     Bet for a horse to finish in the top 3
 """
 class TopThree(Bet):
-    def __init__(self, horse: Horse) -> None:
-        super().__init__((7, 2), horse)
-        self.type = 'Top 3'
+    def __init__(self, horse: Horse):
+        super().__init__('Top 3', (7, 2), horse)
 
     def resolve(self, results: list) -> float:
         for pos, horse in enumerate(results):
@@ -67,22 +56,13 @@ class TopThree(Bet):
                 return self.bet_returns
         return 0.00
     
-    def print_bet(self) -> None:
-        print(f'{' ' + self.type + ' ':-^30}\n')
-        print(f'    Horse:      {self.bet_horse.name}')
-        print(f'    Odds:       {self.bet_odds[0]} : {self.bet_odds[1]}')
-        print(f'    Amount:     {self.bet_amount}.00$')
-        print(f'    Returns:    {self.bet_returns}')
-        print(f'{'':_^30}')
-    
 """
 Top Half:
     Bet for a horse to finish in the top half of horses
 """
 class TopHalf(Bet):
-    def __init__(self, horse: Horse) -> None:
-        super().__init__((5, 3), horse)
-        self.type = 'Top Half'
+    def __init__(self, horse: Horse):
+        super().__init__('Top Half', (5, 3), horse)
 
     def resolve(self, results: list) -> float:
         for pos, horse in enumerate(results):
@@ -90,22 +70,13 @@ class TopHalf(Bet):
                 return self.bet_returns
         return 0.00
     
-    def print_bet(self) -> None:
-        print(f'{' ' + self.type + ' ':-^30}\n')
-        print(f'    Horse:      {self.bet_horse.name}')
-        print(f'    Odds:       {self.bet_odds[0]} : {self.bet_odds[1]}')
-        print(f'    Amount:     {self.bet_amount}.00$')
-        print(f'    Returns:    {self.bet_returns}')
-        print(f'{'':_^30}')
-    
 """
 Top Half:
     Bet for a horse to finish in the top half of horses
 """
 class BottomHalf(Bet):
-    def __init__(self, horse: Horse) -> None:
-        super().__init__((5, 3), horse)
-        self.type = 'Bottom Half'
+    def __init__(self, horse: Horse):
+        super().__init__('Bottom Half', (5, 3), horse)
 
     def resolve(self, results: list) -> float:
         for pos, horse in enumerate(results):
@@ -113,39 +84,20 @@ class BottomHalf(Bet):
                 return self.bet_returns
         return 0.00
     
-    def print_bet(self) -> None:
-        print(f'{' ' + self.type + ' ':-^30}\n')
-        print(f'    Horse:      {self.bet_horse.name}')
-        print(f'    Odds:       {self.bet_odds[0]} : {self.bet_odds[1]}')
-        print(f'    Amount:     {self.bet_amount}.00$')
-        print(f'    Returns:    {self.bet_returns}')
-        print(f'{'':_^30}')
-    
 """
 Does Not Finish:
     Bet that a horse will not complete the race due to health, or stamina, or does not meet minimum time
 """
 class Dnf(Bet):
-    def __init__(self, horse: Horse) -> None:
-        super().__init__((6, 2), horse)
-        self.type = 'DNF'
-
+    def __init__(self, horse: Horse):
+        super().__init__('DNF', (6, 2), horse)
+        
     def resolve(self, results: list):
         for horse in results:
             if horse == self.horse and not horse.race_completion_status:
                 return self.bet_returns
         return 0.00
     
-    def print_bet(self) -> None:
-        print(f'{' ' + self.type + ' ':-^30}\n')
-        print(f'    Horse:      {self.bet_horse.name}')
-        print(f'    Odds:       {self.bet_odds[0]} : {self.bet_odds[1]}')
-        print(f'    Amount:     {self.bet_amount}.00$')
-        print(f'    Returns:    {self.bet_returns}')
-        print(f'{'':_^30}')
     
-    
-
-
 
 

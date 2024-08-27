@@ -1,24 +1,32 @@
-"""
-    Main
-    
-    main
-"""
-import pygame, sys
-import gameStateManager 
+
+import pygame, sys, ctypes
+
+from gameStateManager import GameStateManager
+from states.start import StartState
+from states.intro import IntroState
+from states.betting import BettingState
+from states.racing import RacingState
+from states.resolving import ResolvingState 
+
+user32 = ctypes.windll.user32
+WIDTH, HEIGHT = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1600, 900))
-        self.gsm = gameStateManager('intro')
-        
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.gameStateManager = GameStateManager('start')
+        self.gameStateManager.set_resolution_var(1080)
         # Game State Initializations
-        self.introState = IntroState(self.screen, self.gsm)
-        self.bettingState = BettingState(self.screen, self.gsm)
-        self.racingState = RacingState(self.screen, self.gsm)
-        self.resolvingState = ResolvingState(self.screen, self.gsm)
+        self.startState = StartState(self.screen, self.gameStateManager)
+        self.introState = IntroState(self.screen, self.gameStateManager)
+        self.bettingState = BettingState(self.screen, self.gameStateManager)
+        self.racingState = RacingState(self.screen, self.gameStateManager)
+        self.resolvingState = ResolvingState(self.screen, self.gameStateManager)
         
         self.states = {
+            'start': self.startState,
             'intro': self.introState,
             'betting': self.bettingState,
             'racing': self.racingState,
@@ -34,7 +42,7 @@ class Game:
                     pygame.quit()
                     sys.exit()
                     
-            self.states[self.gsm.get_state()].run()
+            self.states[self.gameStateManager.get_state()].run()
             
             pygame.display.update()
 
